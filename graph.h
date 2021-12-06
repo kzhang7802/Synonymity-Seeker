@@ -6,88 +6,119 @@
 #include <set>
 #include <unordered_map>
 
+// Graph class for graph implementation
 class Graph {
 
-    // Nested node class
+    // Nested node class, represented as a vertex
     class Vertex {
         std::string name;
         std::string speech;
-        list<Vertex> synonyms;
+        std::list<Vertex> synonyms;
 
     public:
-        // For basic synonyms
+        // Constructor for when the part of speech isn't known
         Vertex(std::string name) {
             this->name = name;
         }
 
-        // For words defined in cvs file
+        // Constructor for when the part of speech is known
+        // This is the case when we're adding a vertex as a result of an original word, and not as a synonym of a word
         Vertex(std::string name, std::string speech) {
             this->name = name;
             this->speech = speech;
         }
 
+        // Function to add a vertex to the linked list of synonyms for each vertex
         void addSynonyms(Vertex syn) {
             synonyms.push_back(syn);
         }
 
+        // Setter function for the part of speech
         void setSpeech(std::string speech) {
             this->speech = speech;
         }
 
+        // Getter function for the name
         std::string getName() {
             return name;
         }
     };
 
-    vector<Vertex> adjList;
+    // The vector essentially stores all the vertices in the graph
+    // It's equivalent to the array in an adjacency list
+    std::vector<Vertex> adjList;
+    // The set keeps track of all the words we've encountered
     set<std::string> allWords;
 
 public:
-    Graph(unordered_map<std::string, pair<std::string, vector<std::string>>> result) {
+    // Graph constructor
+    // Takes in the unordered map derived from reading the data from the CSV file
+    Graph(std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> result) {
+        // Iterating over each key-value pair in the unordered map
         for (auto i : result) {
 
-            // If word is unique
+            // If the key (word) has not been encountered before
+            // If the key cannot be found in the set
             if (allWords.find(i.first) == allWords.end()) {
 
+                // Create a new vertex and give it a name (i.first) and a part of speech (i.second.first)
                 Vertex newVertex(i.first, i.second.first);
+                // Insert the name into the set of words we've encountered
                 allWords.insert(i.first);
 
-                // Adds neighbors
+                // Iterating over the vector of synonyms of the word we're dealing with
                 for (auto j : i.second.second) {
 
-                    // Checks if synonym is unique
+                    // If the synonym has not been encountered before in the entire graph
+                    // If the synonym cannot be found in the set
                     if (allWords.find(j) == allWords.end()) {
 
-                        // Constructs new vector
+                        // Creates a new vertex and gives it just a name (j)
                         Vertex newNeighbor(j);
+                        // Insert the name into the set of words we've encountered
                         allWords.insert(j);
+                        // Add the newly created vertex in the linked list of synonyms of the original word we were dealing with
                         newVertex.addSynonyms(newNeighbor);
+                        // Add the newly created vertex in the graph
                         adjList.push_back(newNeighbor);
                     }
                     else {
+                        // Otherwise, if the word has already been encountered (and a vertex was thus created for the word)
+                        // Simply add it into the linked list of synonyms of the original word we were dealing with
                         newVertex.addSynonyms(findVertex(j));
                     }
                 }
+                // Add the original word we were dealing with into our graph
                 adjList.push_back(newVertex);
             }
+            // If the key (word) has been encountered before
+            // If the key can be found in the set
             else {
+                // Find the vertex we've previously created for this word using its name (i.first)
                 Vertex vertex = findVertex(i.first);
+                // Now, give the vertex its part of speech (i.second.first)
                 vertex.setSpeech(i.second.first);
 
-                // Adds neighbors
+                // Iterating over the vector of synonyms of the word we're dealing with
                 for (auto j : i.second.second) {
 
-                    // Checks if synonym is unique
+                    // If the synonym has not been encountered before in the entire graph
+                    // If the synonym cannot be found in the set
                     if (allWords.find(j) == allWords.end()) {
 
-                        // Constructs new vector
+                        // Creates a new vertex and gives it just a name (j)
                         Vertex newNeighbor(j);
+                        // Insert the name into the set of words we've encountered
                         allWords.insert(j);
+                        // Add the newly created vertex in the linked list of synonyms of the original word we were dealing with
                         vertex.addSynonyms(newNeighbor);
+                        // Add the newly created vertex in the graph
                         adjList.push_back(newNeighbor);
                     }
 
                     else {
+                        // Otherwise, if the word has already been encountered (and a vertex was thus created for the word)
+                        // Simply add it into the linked list of synonyms of the original word we were dealing with
                         vertex.addSynonyms(findVertex(j));
                     }
                 }
@@ -95,24 +126,32 @@ public:
         }
     }
 
+    // Helper function to find a particular vertex in a graph based on its name
     Vertex findVertex(std::string nameSearch) {
+        // Default vertex if a particular vertex isn't found for whatever reason
+        // Essentially, it creates a vertex and gives it just the name of the vertex we were seeking
         Vertex vertex(nameSearch);
 
+        // Iterate through the graph
         for (auto i : adjList) {
+            // If a vertex matches the name we're seeking
+            // Return the vertex
             if (i.getName() == nameSearch) {
                 return i;
             }
         }
 
+        // Otherwise, return the default vertex we created
         return vertex;
     }
 
-    // ADDED ACCESSOR METHODS
-    vector<Vertex> getAdjList() {
+    // Getter function for returning the adjacency list
+    std::vector<Vertex> getAdjList() {
         return adjList;
     }
 
-    set<std::string> getWordSet() {
+    // Getter function for returning the set of words we've encountered
+    std::set<std::string> getWordSet() {
         return allWords;
     }
 };
