@@ -71,6 +71,14 @@ std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>
         std::stringstream ss2(allSynonyms);
 
         while (std::getline(ss2, buffer2, ';')) {
+            // Check if the word has an appended "\r" return key at the end
+            // If so, delete the appended return key
+            auto possibleReturnKey = buffer2.find("\r");
+            if (possibleReturnKey != std::string::npos) {
+                buffer2.erase(possibleReturnKey, 2);
+            }
+
+            // Push the synonym into the vector
             synonymVector.push_back(buffer2);
         }
 
@@ -94,6 +102,12 @@ int main()
 {
     std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> result = readCSV("synonyms.csv");
 
+    for (auto x : result) {
+        for (auto i = x.second.second.begin(); i != x.second.second.end(); i++) {
+            std::cout << *i << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 
