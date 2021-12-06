@@ -12,7 +12,7 @@ class Graph {
     class Vertex {
         std::string name;
         std::string speech;
-        std::list<Vertex> synonyms;
+        list<Vertex> synonyms;
 
     public:
         // For basic synonyms
@@ -39,15 +39,15 @@ class Graph {
         }
     };
 
-    std::vector<Vertex> adjList;
-    std::set<std::string> allWords;
+    vector<Vertex> adjList;
+    set<std::string> allWords;
 
 public:
-    Graph(std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> result) {
+    Graph(unordered_map<std::string, pair<std::string, vector<std::string>>> result) {
         for (auto i : result) {
 
             // If word is unique
-            if (allWords.find(i.first) != allWords.end()) {
+            if (allWords.find(i.first) == allWords.end()) {
 
                 Vertex newVertex(i.first, i.second.first);
                 allWords.insert(i.first);
@@ -56,17 +56,19 @@ public:
                 for (auto j : i.second.second) {
 
                     // Checks if synonym is unique
-                    if (allWords.find(j) != allWords.end()) {
+                    if (allWords.find(j) == allWords.end()) {
 
                         // Constructs new vector
                         Vertex newNeighbor(j);
                         allWords.insert(j);
                         newVertex.addSynonyms(newNeighbor);
+                        adjList.push_back(newNeighbor);
                     }
                     else {
                         newVertex.addSynonyms(findVertex(j));
                     }
                 }
+                adjList.push_back(newVertex);
             }
             else {
                 Vertex vertex = findVertex(i.first);
@@ -76,12 +78,13 @@ public:
                 for (auto j : i.second.second) {
 
                     // Checks if synonym is unique
-                    if (allWords.find(j) != allWords.end()) {
+                    if (allWords.find(j) == allWords.end()) {
 
                         // Constructs new vector
                         Vertex newNeighbor(j);
                         allWords.insert(j);
                         vertex.addSynonyms(newNeighbor);
+                        adjList.push_back(newNeighbor);
                     }
 
                     else {
@@ -102,6 +105,15 @@ public:
         }
 
         return vertex;
+    }
+
+    // ADDED ACCESSOR METHODS
+    vector<Vertex> getAdjList() {
+        return adjList;
+    }
+
+    set<std::string> getWordSet() {
+        return allWords;
     }
 };
 
