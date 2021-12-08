@@ -13,7 +13,7 @@ std::vector<std::pair<Graph::Vertex, int>> bfs(Graph graph, const std::string &w
     std::unordered_set<std::string> visited;
 
     // Find the vertex of the user inputted word
-    Graph::Vertex current = graph.findVertex(word);
+    Graph::Vertex current = graph.findVertexTraversal(word);
 
     // Place found vertex in a queue and mark it visited
     vertexQ.push(current);
@@ -93,7 +93,7 @@ std::vector<Graph::Vertex> dfs(Graph graph, const std::string &word, const int s
     std::unordered_set<std::string> visited;
 
     // Find the vertex of the user inputted word
-    Graph::Vertex current = graph.findVertex(word);
+    Graph::Vertex current = graph.findVertexTraversal(word);
 
     // Place found vertex in the stack and mark it visited
     vertexStk.push(current);
