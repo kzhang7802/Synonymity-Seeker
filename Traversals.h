@@ -7,13 +7,17 @@
 #include "Graph.h"
 
 // Returns a vector of pairs including Vertex objects and their respective distances from the source vertex (as integers), all synonymous to the user inputted word using BFS
-std::vector<std::pair<Graph::Vertex, int>> bfs(Graph graph, const std::string &word, const int size) {
+std::vector<std::pair<Graph::Vertex, int>> bfs(Graph graph, const std::string& word, const int size) {
     std::vector<std::pair<Graph::Vertex, int>> result;
     std::queue<Graph::Vertex> vertexQ;
     std::unordered_set<std::string> visited;
 
     // Find the vertex of the user inputted word
     Graph::Vertex current = graph.findVertexTraversal(word);
+
+    if (word == "absentminded") {
+        std::cout << "";
+    }
 
     // Place found vertex in a queue and mark it visited
     vertexQ.push(current);
@@ -35,13 +39,8 @@ std::vector<std::pair<Graph::Vertex, int>> bfs(Graph graph, const std::string &w
         current = vertexQ.front();
         vertexQ.pop();
 
-        // Helper variable to store the list of synonyms
-        auto synonymList = current.getSynonyms();
-        // Size of the synonym list
-        numSynonyms = synonymList.size();
-
         // If all the synonyms sharing the same number of edges traversed from the source vertex are exhausted
-        if (numSynonyms == 0) {
+        if (numSynonyms == 0 && !firstTime) {
             // The edges traversed from the source vertex must increase by one
             edgesTraversed++;
             // The saved next iteration of number of synonyms sharing the same number of edges to be traversed is replacing the previous counter
@@ -49,18 +48,24 @@ std::vector<std::pair<Graph::Vertex, int>> bfs(Graph graph, const std::string &w
             // Reset the next iteration
             nextNumSynonyms = 0;
         }
-        // If the synonyms are not exhausted, decrement its counter
-        numSynonyms--;
+
+        // Helper variable to store the list of synonyms
+        auto synonymList = current.getSynonyms(graph);
+        // Size of the synonym list
+        numSynonyms = synonymList.size();
 
         // For all vertices, v, adjacent to his vertex, u...
-        for (auto &syn : synonymList)
+        for (auto& syn : synonymList)
         {
+            // If the synonyms are not exhausted, decrement its counter
+            numSynonyms--;
+
             // If size of resulting vector is equivalent to specified size, return resulting vector
             if (result.size() == size)
                 return result;
 
             // ...if v has not been visited...
-            if (visited.find(syn.getName()) == visited.end())
+            if (visited.find(syn) == visited.end())
             {
                 // Only increment the counter keeping track of the next iteration of synonyms if not pertaining to the synonyms of the source vector
                 if (!firstTime) {
@@ -69,7 +74,7 @@ std::vector<std::pair<Graph::Vertex, int>> bfs(Graph graph, const std::string &w
 
                 // ...mark this vertex v as identified and push into queue
                 result.push_back(std::make_pair(syn, edgesTraversed));
-                visited.insert(syn.getName());
+                visited.insert(syn);
                 vertexQ.push(syn);
             }
         }
@@ -83,7 +88,7 @@ std::vector<std::pair<Graph::Vertex, int>> bfs(Graph graph, const std::string &w
 
 
 // Returns a vector of class Vertex objects synonymous to the user inputted word using DFS
-std::vector<Graph::Vertex> dfs(Graph graph, const std::string &word, const int size) {
+std::vector<Graph::Vertex> dfs(Graph graph, const std::string& word, const int size) {
 
     if (size <= 0)
         return {};
@@ -106,23 +111,23 @@ std::vector<Graph::Vertex> dfs(Graph graph, const std::string &word, const int s
         current = vertexStk.top();
 
         // If current vertex's synonym vector is empty, then pop stack
-        if (current.getSynonyms().size() == 0) {
+        if (current.getSynonyms(graph).size() == 0) {
             vertexStk.pop();
             continue;
         }
 
         // For all vertices, v, adjacent to his vertex, u...
-        for (auto &syn : current.getSynonyms())
+        for (auto& syn : current.getSynonyms(graph))
         {
             // If size of resulting vector is equivalent to specified size, return resulting vector
             if (result.size() == size)
                 return result;
 
             // ...if v has not been visited...
-            if (visited.find(syn.getName()) == visited.end()) {
+            if (visited.find(syn) == visited.end()) {
                 // ...mark this vertex v as identified and push into stack
                 result.push_back(syn);
-                visited.insert(syn.getName());
+                visited.insert(syn);
                 vertexStk.push(syn);
             }
             else if (!vertexStk.empty())

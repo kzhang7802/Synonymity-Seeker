@@ -14,7 +14,7 @@ public:
     class Vertex {
         std::string name;
         std::string speech;
-        std::list<Vertex> synonyms;
+        std::list<std::string> synonyms;
     public:
         // Constructor for when the part of speech isn't known
         Vertex(const std::string& name);
@@ -23,8 +23,8 @@ public:
         // This is the case when we're adding a vertex as a result of an original word, and not as a synonym of a word
         Vertex(const std::string& name, const std::string& speech);
 
-        // Function to add a vertex to the linked list of synonyms for each vertex
-        void addSynonyms(const Vertex& syn);
+        // Function to add a string to the linked list of synonyms for each vertex
+        void addSynonyms(const std::string syn);
 
         // Setter function for the part of speech
         void setSpeech(const std::string& speech);
@@ -33,7 +33,7 @@ public:
         std::string getName();
 
         // Getter function for the vertex's synonyms
-        std::list<Vertex> getSynonyms();
+        std::list<std::string> getSynonyms(Graph graph);
     };
 
 
@@ -50,23 +50,12 @@ public:
     // Getter function for returning the adjacency list
     std::vector<Vertex> getAdjList();
 
-    // Getter function for returning the set of words we've encountered
-    std::unordered_set<std::string> getWordSet();
 
 private:
     // The vector essentially stores all the vertices in the graph
     // It's equivalent to the array in an adjacency list
     std::vector<Vertex> adjList;
 
-    // The set keeps track of all the words we've encountered
-    std::unordered_set<std::string> allWords;
-
     // A set of all vertices
     std::unordered_map<std::string, Vertex> allVertices;
-
-    // Creates new vertex (including name and synonym)
-    Vertex newVertex(const std::string& name, const std::string& syn);
-
-    // Creates new neighbor (including name and linking)
-    Vertex newNeighbor(const std::string& name, Vertex& vertex);
 };
