@@ -53,7 +53,7 @@ std::vector<std::pair<Graph::Vertex, int>> bfs(Graph graph, const std::string &w
         numSynonyms--;
 
         // For all vertices, v, adjacent to his vertex, u...
-        for (auto &syn : synonymList) 
+        for (auto &syn : synonymList)
         {
             // If size of resulting vector is equivalent to specified size, return resulting vector
             if (result.size() == size)
@@ -84,6 +84,10 @@ std::vector<std::pair<Graph::Vertex, int>> bfs(Graph graph, const std::string &w
 
 // Returns a vector of class Vertex objects synonymous to the user inputted word using DFS
 std::vector<Graph::Vertex> dfs(Graph graph, const std::string &word, const int size) {
+
+    if (size <= 0)
+        return {};
+
     std::vector<Graph::Vertex> result;
     std::stack<Graph::Vertex> vertexStk;
     std::unordered_set<std::string> visited;
@@ -101,6 +105,12 @@ std::vector<Graph::Vertex> dfs(Graph graph, const std::string &word, const int s
         // Take a vertex, u, out of the stack and visit u
         current = vertexStk.top();
 
+        // If current vertex's synonym vector is empty, then pop stack
+        if (current.getSynonyms().size() == 0) {
+            vertexStk.pop();
+            continue;
+        }
+
         // For all vertices, v, adjacent to his vertex, u...
         for (auto &syn : current.getSynonyms())
         {
@@ -109,21 +119,15 @@ std::vector<Graph::Vertex> dfs(Graph graph, const std::string &word, const int s
                 return result;
 
             // ...if v has not been visited...
-            if (visited.find(syn.getName()) == visited.end())
-            {
+            if (visited.find(syn.getName()) == visited.end()) {
                 // ...mark this vertex v as identified and push into stack
                 result.push_back(syn);
                 visited.insert(syn.getName());
                 vertexStk.push(syn);
             }
-            else
+            else if (!vertexStk.empty())
                 vertexStk.pop();
         }
-        // If the current vertex has no symptoms, pop it
-        if (current.getSynonyms().size() == 0) {
-            vertexStk.pop();
-        }
-
     }
     // Return resulting vector
     return result;
