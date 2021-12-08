@@ -1,15 +1,15 @@
 #include "Graph.h"
 
-Graph::Vertex::Vertex(const std::string&  name) {
+Graph::Vertex::Vertex(const std::string& name) {
     this->name = name;
 }
 
-Graph::Vertex::Vertex(const std::string&  name, const std::string&  speech) {
+Graph::Vertex::Vertex(const std::string& name, const std::string& speech) {
     this->name = name;
     this->speech = speech;
 }
 
-void Graph::Vertex::addSynonyms(const Graph::Vertex& syn) {
+void Graph::Vertex::addSynonyms(const std::string syn) {
     synonyms.push_back(syn);
 }
 
@@ -21,83 +21,51 @@ std::string Graph::Vertex::getName() {
     return name;
 }
 
-std::list<Graph::Vertex> Graph::Vertex::getSynonyms() {
-    return synonyms;
+// Searches through the adjacency list and returns the synonyms of a vertex
+std::list<std::string> Graph::Vertex::getSynonyms(Graph graph) {
+    std::list<std::string> returnList;
+    for (auto i : graph.adjList) {
+        if (i.getName() == this->getName()) {
+            return i.synonyms;
+        }
+    }
+    return returnList;
 }
 
 Graph::Graph(std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> result) {
     // Iterating over each key-value pair in the unordered map
     for (auto i : result) {
 
-        // If the key (word) has not been encountered before
-        // If the key cannot be found in the set
-        if (allWords.find(i.first) == allWords.end()) {
+        // Create a new vertex and give it a name (i.first) and a part of speech (i.second.first)
+        Vertex newVertex(i.first, i.second.first);
 
-            // Create a new vertex and give it a name (i.first) and a part of speech (i.second.first)
-            Vertex vertex = newVertex(i.first, i.second.first);
+        // Insert the vertex into the unordered map
+        allVertices.insert({ i.first, newVertex });
 
-            // Iterating over the vector of synonyms of the word we're dealing with
-            for (const auto& j : i.second.second) {
+        // Iterating over the vector of synonyms of the word we're dealing with
+        for (const auto& j : i.second.second) {
 
-                // If the synonym has not been encountered before in the entire graph
-                // If the synonym cannot be found in the set
-                if (allWords.find(j) == allWords.end()) {
-
-                    // Creates a new vertex and gives it just a name (j)
-                    Vertex neighbor = newNeighbor(j, vertex);
-                    // Add the newly created vertex in the graph
-                    adjList.push_back(neighbor);
-                }
-                else {
-                    // Otherwise, if the word has already been encountered (and a vertex was thus created for the word)
-                    // Simply add it into the linked list of synonyms of the original word we were dealing with
-                    vertex.addSynonyms(findVertex(j));
-                }
-            }
-
-            // Add the original word we were dealing with into our graph
-            adjList.push_back(vertex);
+            // Add the string value of the synonym
+            newVertex.addSynonyms(j);
         }
-            // If the key (word) has been encountered before
-            // If the key can be found in the set
-        else {
-            // Find the vertex we've previously created for this word using its name (i.first)
-            Vertex vertex = findVertex(i.first);
-            // Now, give the vertex its part of speech (i.second.first)
-            vertex.setSpeech(i.second.first);
 
-            // Iterating over the vector of synonyms of the word we're dealing with
-            for (const auto& j : i.second.second) {
-
-                // If the synonym has not been encountered before in the entire graph
-                // If the synonym cannot be found in the set
-                if (allWords.find(j) == allWords.end()) {
-
-                    // Creates a new vertex and gives it just a name (j)
-                    Vertex neighbor = newNeighbor(j, vertex);
-                    // Add the newly created vertex in the graph
-                    adjList.push_back(neighbor);
-                }
-
-                else {
-                    // Otherwise, if the word has already been encountered (and a vertex was thus created for the word)
-                    // Simply add it into the linked list of synonyms of the original word we were dealing with
-                    vertex.addSynonyms(findVertex(j));
-                }
-            }
-        }
+        // Add the original word we were dealing with into our graph
+        adjList.push_back(newVertex);
     }
+    
 }
 
 std::vector<Graph::Vertex> Graph::getAdjList() {
     return adjList;
 }
 
-std::unordered_set<std::string> Graph::getWordSet() {
-    return allWords;
-}
-
+// Similar helper function to find a particular vertex in a graph based on its name
 Graph::Vertex Graph::findVertex(const std::string& nameSearch) {
+    for (auto i : adjList) {
+        if (i.getName() == nameSearch) {
+            return i;
+        }
+    }
     return allVertices.find(nameSearch)->second;
 }
 
@@ -120,27 +88,3 @@ Graph::Vertex Graph::findVertexTraversal(const std::string& nameSearch) {
     return vertex;
 }
 
-Graph::Vertex Graph::newVertex(const std::string& name, const std::string& syn) {
-    // Create a new vertex and give it a name and a part of speech
-    Vertex vertex(name, syn);
-    // Insert the name into the unordered_set of words we've encountered
-    allWords.insert(name);
-    // Insert the vertex into the unordered_map of vertices we've encountered
-    allVertices.insert({name, vertex});
-
-    return vertex;
-}
-
-Graph::Vertex Graph::newNeighbor(const std::string& name, Vertex& vertex) {
-    // Creates a new vertex and gives it just a name
-    Vertex newVertex(name);
-    // Insert the name into the unordered_set of words we've encountered
-    allWords.insert(name);
-    // Insert the vertex into the unordered_map of vertices we've encountered
-    allVertices.insert({name, newVertex});
-
-    // Add the newly created vertex in the linked list of synonyms of the original word we were dealing with
-    vertex.addSynonyms(newVertex);
-
-    return newVertex;
-}
