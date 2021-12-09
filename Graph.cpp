@@ -1,5 +1,7 @@
 #include "Graph.h"
 
+Graph::Graph() {}
+
 Graph::Vertex::Vertex(const std::string& name) {
     this->name = name;
 }
@@ -13,7 +15,7 @@ void Graph::Vertex::addSynonyms(const std::string syn) {
     synonyms.push_back(syn);
 }
 
-void Graph::Vertex::setSpeech(const std::string&) {
+void Graph::Vertex::setSpeech(const std::string &speech) {
     this->speech = speech;
 }
 
@@ -56,7 +58,7 @@ Graph::Graph(std::unordered_map<std::string, std::pair<std::string, std::vector<
         // Add the original word we were dealing with into our graph
         adjList.push_back(newVertex);
     }
-    
+
 }
 
 std::vector<Graph::Vertex> Graph::getAdjList() {

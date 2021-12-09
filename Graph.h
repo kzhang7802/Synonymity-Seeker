@@ -31,7 +31,7 @@ public:
 
         // Getter function for the name
         std::string getName();
-        
+
         // Getter function for the part of speech
         std::string getSpeech();
 
@@ -39,7 +39,7 @@ public:
         std::list<std::string> getSynonyms(Graph graph);
     };
 
-
+    Graph();
     // Graph constructor
     // Takes in the unordered map derived from reading the data from the CSV file
     Graph(std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> result);
