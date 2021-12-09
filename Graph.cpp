@@ -14,7 +14,7 @@ Graph::Vertex::Vertex(const std::string& name, const std::string& speech) {
 }
 
 // Function for adding synonyms
-void Graph::Vertex::addSynonyms(const std::string syn) {
+void Graph::Vertex::addSynonyms(const std::string& syn) {
     synonyms.push_back(syn);
 }
 
