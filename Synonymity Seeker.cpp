@@ -14,6 +14,118 @@ typedef std::chrono::high_resolution_clock Clock;
 std::vector<std::pair<std::string, double>> bfsRatingAlgorithm(Graph graph, std::vector<std::pair<Graph::Vertex, int>> bfsVect, std::string originalWord);
 std::vector<std::pair<std::string, double>> dfsRatingAlgorithm(Graph graph, std::vector<std::pair<Graph::Vertex, int>> dfsVect, std::string originalWord);
 
+// Prototype for reading in data from CSV file
+std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> readCSV(std::string filename);
+
+int main()
+{
+    std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> result = readCSV("synonyms.csv");
+
+    // Prints everything in results vector
+
+//    for (auto x : result) {
+//        for (auto i = x.second.second.begin(); i != x.second.second.end(); i++) {
+//            std::cout << *i << " ";
+//        }
+//        std::cout << std::endl;
+//    }
+
+
+    // Stores elements of result vector as specified in the graph class
+
+
+    Graph obj(result);
+
+    
+   /* std::vector<std::pair<Graph::Vertex, int>> bfsvect = bfs(obj, "enunciate", 10);
+
+    std::vector<std::pair<std::string, double>> rating = bfsRatingAlgorithm(obj, bfsvect, "track");
+
+    for (auto i : rating) {
+        std::cout << i.first << " " << i.second << std::endl;
+    }*/
+}
+
+// Helper function to allow for sorting of pairs in descending order
+// Compares the pairs' second values, which would be the ratings
+bool sortByRating(const std::pair<std::string, double>& a, const std::pair <std::string, double>& b) {
+    return (a.second > b.second);
+}
+
+// Rating algorithm for BFS traversals
+std::vector<std::pair<std::string, double>> bfsRatingAlgorithm(Graph graph, std::vector<std::pair<Graph::Vertex, int>> bfsVect, std::string originalWord) {
+    // Create a vector to return the strings and ratings of the results
+    std::vector<std::pair<std::string, double>> returnVect;
+    // Declare variable for rating
+    double rating;
+    // Find the part of speech of the original word
+    std::string originalPartOfSpeech = graph.findVertex(originalWord).getSpeech();
+
+    // Iterate through the vectors derived from the DFS traversal
+    for (int i = 0; i < bfsVect.size(); i++) {
+        // Begin with the rating at 10
+        rating = 10.0;
+        // Find the part of speech of this particular vertex
+        std::string partOfSpeech = graph.findVertex(bfsVect[i].first.getName()).getSpeech();
+        // If the part of speech doesn't match, remove 1.5 rating points
+        if (partOfSpeech != originalPartOfSpeech) {
+            rating -= 1.5;
+        }
+        // For every edge greater than the first edge, remove 2 rating points (no negatives)
+        for (int j = 1; j < bfsVect[i].second; j++) {
+            if (rating >= 2.0) {
+                rating -= 2.0;
+            }
+        }
+
+        // Push the pair into the vector to be returned
+        returnVect.push_back(std::make_pair(bfsVect[i].first.getName(), rating));
+    }
+
+    // Call the sorting function using the helper sorting method
+    std::sort(returnVect.begin(), returnVect.end(), sortByRating);
+
+    // Return the vector
+    return returnVect;
+}
+
+// Rating algorithm for DFS traversals
+std::vector<std::pair<std::string, double>> dfsRatingAlgorithm(Graph graph, std::vector<std::pair<Graph::Vertex, int>> dfsVect, std::string originalWord) {
+    // Create a vector to return the strings and ratings of the results
+    std::vector<std::pair<std::string, double>> returnVect;
+    // Declare variable for rating
+    double rating;
+    // Find the part of speech of the original word
+    std::string originalPartOfSpeech = graph.findVertex(originalWord).getSpeech();
+
+    // Iterate through the vectors derived from the DFS traversal
+    for (int i = 0; i < dfsVect.size(); i++) {
+        // Begin with the rating at 10
+        rating = 10.0;
+        // Find the part of speech of this particular vertex
+        std::string partOfSpeech = graph.findVertex(dfsVect[i].first.getName()).getSpeech();
+        // If the part of speech doesn't match, remove 1 rating point
+        if (partOfSpeech != originalPartOfSpeech) {
+            rating -= 1;
+        }
+        // For every edge greater than the first edge, remove 1.5 rating points (no negatives)
+        for (int j = 1; j < dfsVect[i].second; j++) {
+            if (rating >= 1.5) {
+                rating -= 1.5;
+            }
+        }
+
+        // Push the pair into the vector to be returned
+        returnVect.push_back(std::make_pair(dfsVect[i].first.getName(), rating));
+    }
+
+    // Call the sorting function using the helper sorting method
+    std::sort(returnVect.begin(), returnVect.end(), sortByRating);
+
+    // Return the vector
+    return returnVect;
+}
+
 std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> readCSV(std::string filename) {
 
     // Create an unordered map that stores strings as keys, and the value as a pair of an additional string and a vector
@@ -108,115 +220,5 @@ std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>
     myFile.close();
 
     return result;
-}
-
-
-int main()
-{
-    std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> result = readCSV("synonyms.csv");
-
-    // Prints everything in results vector
-
-//    for (auto x : result) {
-//        for (auto i = x.second.second.begin(); i != x.second.second.end(); i++) {
-//            std::cout << *i << " ";
-//        }
-//        std::cout << std::endl;
-//    }
-
-
-    // Stores elements of result vector as specified in the graph class
-
-
-    Graph obj(result);
-
-    /*
-    std::vector<std::pair<Graph::Vertex, int>> dfsvect = dfs(obj, "ablaze", 25);
-
-    std::vector<std::pair<std::string, double>> rating = dfsRatingAlgorithm(obj, dfsvect, "ablaze");
-
-    for (auto i : rating) {
-        std::cout << i.first << " " << i.second << std::endl;
-    }*/
-}
-
-// Helper function to allow for sorting of pairs in descending order
-// Compares the pairs' second values, which would be the ratings
-bool sortByRating(const std::pair<std::string, double>& a, const std::pair <std::string, double>& b) {
-    return (a.second > b.second);
-}
-
-// Rating algorithm for BFS traversals
-std::vector<std::pair<std::string, double>> bfsRatingAlgorithm(Graph graph, std::vector<std::pair<Graph::Vertex, int>> bfsVect, std::string originalWord) {
-    // Create a vector to return the strings and ratings of the results
-    std::vector<std::pair<std::string, double>> returnVect;
-    // Declare variable for rating
-    double rating;
-    // Find the part of speech of the original word
-    std::string originalPartOfSpeech = graph.findVertex(originalWord).getSpeech();
-
-    // Iterate through the vectors derived from the DFS traversal
-    for (int i = 0; i < bfsVect.size(); i++) {
-        // Begin with the rating at 10
-        rating = 10.0;
-        // Find the part of speech of this particular vertex
-        std::string partOfSpeech = graph.findVertex(bfsVect[i].first.getName()).getSpeech();
-        // If the part of speech doesn't match, remove 2 rating points
-        if (partOfSpeech != originalPartOfSpeech) {
-            rating -= 2.0;
-        }
-        // For every edge greater than the first edge, remove 2 rating points (no negatives)
-        for (int j = 1; j < bfsVect[i].second; j++) {
-            if (rating >= 2.0) {
-                rating -= 2.0;
-            }
-        }
-
-        // Push the pair into the vector to be returned
-        returnVect.push_back(std::make_pair(bfsVect[i].first.getName(), rating));
-    }
-
-    // Call the sorting function using the helper sorting method
-    std::sort(returnVect.begin(), returnVect.end(), sortByRating);
-
-    // Return the vector
-    return returnVect;
-}
-
-// Rating algorithm for DFS traversals
-std::vector<std::pair<std::string, double>> dfsRatingAlgorithm(Graph graph, std::vector<std::pair<Graph::Vertex, int>> dfsVect, std::string originalWord) {
-    // Create a vector to return the strings and ratings of the results
-    std::vector<std::pair<std::string, double>> returnVect;
-    // Declare variable for rating
-    double rating;
-    // Find the part of speech of the original word
-    std::string originalPartOfSpeech = graph.findVertex(originalWord).getSpeech();
-
-    // Iterate through the vectors derived from the DFS traversal
-    for (int i = 0; i < dfsVect.size(); i++) {
-        // Begin with the rating at 10
-        rating = 10.0;
-        // Find the part of speech of this particular vertex
-        std::string partOfSpeech = graph.findVertex(dfsVect[i].first.getName()).getSpeech();
-        // If the part of speech doesn't match, remove 1 rating point
-        if (partOfSpeech != originalPartOfSpeech) {
-            rating -= 1;
-        }
-        // For every edge greater than the first edge, remove 1.5 rating points (no negatives)
-        for (int j = 1; j < dfsVect[i].second; j++) {
-            if (rating >= 1.5) {
-                rating -= 1.5;
-            }
-        }
-
-        // Push the pair into the vector to be returned
-        returnVect.push_back(std::make_pair(dfsVect[i].first.getName(), rating));
-    }
-
-    // Call the sorting function using the helper sorting method
-    std::sort(returnVect.begin(), returnVect.end(), sortByRating);
-
-    // Return the vector
-    return returnVect;
 }
 
