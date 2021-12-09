@@ -2,33 +2,34 @@
 
 Graph::Graph() {}
 
+// Vertex constructor
 Graph::Vertex::Vertex(const std::string& name) {
     this->name = name;
 }
 
+// Another vertex constructor
 Graph::Vertex::Vertex(const std::string& name, const std::string& speech) {
     this->name = name;
     this->speech = speech;
 }
 
+// Function for adding synonyms
 void Graph::Vertex::addSynonyms(const std::string syn) {
     synonyms.push_back(syn);
 }
 
-void Graph::Vertex::setSpeech(const std::string &speech) {
-    this->speech = speech;
-}
-
+// Getter function for the part of speech
 std::string Graph::Vertex::getSpeech() {
     return speech;
 }
 
+// Getter function for the name
 std::string Graph::Vertex::getName() {
     return name;
 }
 
 // Searches through the adjacency list and returns the synonyms of a vertex
-std::list<std::string> Graph::Vertex::getSynonyms(Graph graph) {
+std::list<std::string> Graph::Vertex::getSynonyms(Graph& graph) {
     std::list<std::string> returnList;
     for (auto i : graph.adjList) {
         if (i.getName() == this->getName()) {
