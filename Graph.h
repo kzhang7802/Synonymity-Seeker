@@ -31,6 +31,9 @@ public:
 
         // Getter function for the name
         std::string getName();
+        
+        // Getter function for the part of speech
+        std::string getSpeech();
 
         // Getter function for the vertex's synonyms
         std::list<std::string> getSynonyms(Graph graph);
