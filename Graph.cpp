@@ -17,6 +17,10 @@ void Graph::Vertex::setSpeech(const std::string&) {
     this->speech = speech;
 }
 
+std::string Graph::Vertex::getSpeech() {
+    return speech;
+}
+
 std::string Graph::Vertex::getName() {
     return name;
 }
