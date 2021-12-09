@@ -12,6 +12,7 @@ class Graph {
 public:
     // Nested node class, represented as a vertex
     class Vertex {
+        // Private variables
         std::string name;
         std::string speech;
         std::list<std::string> synonyms;
@@ -24,22 +25,19 @@ public:
         Vertex(const std::string& name, const std::string& speech);
 
         // Function to add a string to the linked list of synonyms for each vertex
-        void addSynonyms(const std::string syn);
-
-        // Setter function for the part of speech
-        void setSpeech(const std::string& speech);
+        void addSynonyms(const std::string& syn);
 
         // Getter function for the name
         std::string getName();
-        
+
         // Getter function for the part of speech
         std::string getSpeech();
 
         // Getter function for the vertex's synonyms
-        std::list<std::string> getSynonyms(Graph graph);
+        std::list<std::string> getSynonyms(Graph& graph);
     };
 
-
+    Graph();
     // Graph constructor
     // Takes in the unordered map derived from reading the data from the CSV file
     Graph(std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> result);
