@@ -25,7 +25,7 @@ public:
         Vertex(const std::string& name, const std::string& speech);
 
         // Function to add a string to the linked list of synonyms for each vertex
-        void addSynonyms(const std::string syn);
+        void addSynonyms(const std::string& syn);
 
         // Getter function for the name
         std::string getName();
