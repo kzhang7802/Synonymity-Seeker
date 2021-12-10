@@ -55,6 +55,7 @@ private slots:
 private:
     Ui::Widget *ui;
 
+    int MAX_NUMSYN = 100;
     std::string FILENAME = "synonyms.csv";
 
     QString word;

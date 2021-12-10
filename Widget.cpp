@@ -52,9 +52,10 @@ void Widget::on_pushBtn_findSyn_clicked()
     bool valid;
     numSyn.toInt(&valid);
 
-    if (!valid || numSyn.toInt() < 1 || numSyn.toInt() > 100)
+    if (!valid || numSyn.toInt() < 1 || numSyn.toInt() > MAX_NUMSYN)
     {
-        QMessageBox::warning(this, "Input Error", "Please enter a valid number from 1 to 100.");
+        QMessageBox::warning(this, "Input Error", "Please enter a valid number from 1 to " +
+        QString::number(MAX_NUMSYN) + ".");
         return;
     }
 
@@ -142,12 +143,16 @@ void Widget::printResult()
 
     info += "\n";
 
+    dfsRating.clear();
+    bfsRating.clear();
+    dfsVect.clear();
+    bfsVect.clear();
+
     QMessageBox msg;
     msg.setText(header);
 
     // Display as detailed text (with scroll bar)
     msg.setDetailedText(info);
-
     msg.exec();
 }
 
